@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { auth, firestore} from '../../services/firebase';
 
-const UserProfile = () => {
+function UserProfile() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {

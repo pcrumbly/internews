@@ -30,15 +30,17 @@ export const firestore = getFirestore(app);
 // FirebaseUI config
 export const uiConfig = {
     signInFlow: 'popup',
+    signInSuccessUrl: '/profile',  // URL to redirect to on successful sign-in
     signInOptions: [
-        // List the authentication providers you want to support
-        'google.com',
-        'password'
+        // List the authentication providers you want to support for registration
+        'password',
+        // ... other providers
     ],
     callbacks: {
         signInSuccessWithAuthResult: () => false
     }
 };
+
 
 // Initialize FirebaseUI
 export const ui = new firebaseui.auth.AuthUI(auth);

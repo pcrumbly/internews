@@ -6,6 +6,7 @@ import React from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import UserProfile from './components/Auth/UserProfile';
+import Register from './components/Auth/Register';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
         <Route path="/" element={<h1>Welcome to Internews</h1>} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<UserProfile />} />
+        <Route path="/register" element={<Register />} />
       </Routes>
     </Router>
   );

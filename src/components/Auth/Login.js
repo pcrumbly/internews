@@ -1,43 +1,22 @@
-// src/components/Auth/Login.js
-
-import { auth } from '../../services/firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { ui, uiConfig } from '../../services/firebase';
 
 function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      // Handle successful login
-    } catch (error) {
-      console.error('Login failed:', error);
-      // Handle login error
-    }
-  };
   
+  useEffect(() => {
+    // Start the FirebaseUI widget
+    ui.start('#firebaseui-auth-container', uiConfig);
+    
+    // Cleanup the UI on unmount
+    return () => {
+      ui.reset();
+    };
+  }, []);
 
   return (
     <div>
       <h1>Login/Register</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <button type="submit">Login</button>
-      </form>
+      <div id="firebaseui-auth-container"></div>
     </div>
   );
 }
