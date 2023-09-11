@@ -1,7 +1,12 @@
+// Import core Firebase services
 import { initializeApp } from 'firebase/app';
-//import { getAnalytics } from 'firebase/analytics';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
+//import { getAnalytics } from "firebase/analytics";
+
+// Import FirebaseUI and its styles
+import * as firebaseui from 'firebaseui';
+import 'firebaseui/dist/firebaseui.css';
 
 // Your Firebase configuration
 const firebaseConfig = {
@@ -18,9 +23,22 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 //const analytics = getAnalytics(app);
 
-// Export Firebase services
+// Initialize Firebase services
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
-// Add other Firebase services as needed
 
+// FirebaseUI config
+export const uiConfig = {
+    signInFlow: 'popup',
+    signInOptions: [
+        // List the authentication providers you want to support
+        'google.com',
+        'password'
+    ],
+    callbacks: {
+        signInSuccessWithAuthResult: () => false
+    }
+};
 
+// Initialize FirebaseUI
+export const ui = new firebaseui.auth.AuthUI(auth);
