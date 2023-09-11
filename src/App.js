@@ -7,18 +7,16 @@ import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import Login from './components/Auth/Login';
 import UserProfile from './components/Auth/UserProfile';
 import Register from './components/Auth/Register';
-
+import Header from './components/Header';
 function App() {
   return (
     <Router>
       <div className="App">
-        <h1><a href="/">InterNews</a></h1>
-        
+        <Header />
         <nav>
           <Link to="/register">Register </Link>
           <Link to="/login">Login </Link>
           <Link to="/profile">Profile </Link>
-          {/* Add other links as needed */}
         </nav>
       </div>
       <Routes>
