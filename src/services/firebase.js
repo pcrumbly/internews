@@ -41,6 +41,5 @@ export const uiConfig = {
     }
 };
 
-
 // Initialize FirebaseUI
 export const ui = new firebaseui.auth.AuthUI(auth);
