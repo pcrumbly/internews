@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ui, uiConfig, auth } from '../../services/firebase';
+import Logout from '../Auth/Logout';
 
 function Login() {
   const [user, setUser] = useState(null);
@@ -28,7 +29,8 @@ function Login() {
       {user ? (
         // User is logged in, display welcome message and logged-in content
         <div>
-          <p>Welcome, {user.displayName}!</p>
+          <p>Welcome, {user.displayName}!<Logout /></p>
+          
           {/* Add your logged-in content here */}
         </div>
       ) : (
