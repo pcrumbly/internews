@@ -8,6 +8,7 @@ import Login from './components/Auth/Login';
 import UserProfile from './components/Auth/UserProfile';
 import Register from './components/Auth/Register';
 import Header from './components/Header';
+import Links from './components/Link/Links';
 function App() {
   return (
     <Router>
@@ -20,7 +21,7 @@ function App() {
         </nav>
       </div>
       <Routes>
-        <Route path="/" element={<h1>Welcome to Internews</h1>} />
+        <Route path="/" element={<div><h1>Welcome to Internews</h1> <Links /></div>} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<UserProfile />} />
         <Route path="/register" element={<Register />} />
