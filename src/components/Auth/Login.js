@@ -16,8 +16,9 @@ function Login() {
 
     return () => {
       // Cleanup on unmount
-      ui.reset();
       unsubscribe();
+      ui.reset();
+      
     };
   }, []);
 

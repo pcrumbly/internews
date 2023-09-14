@@ -23,10 +23,23 @@ function CreateLink() {
           createdAt: serverTimestamp(),
           points: 0
         };
-  
-        await addDoc(collection(firestore, 'links'), linkData);
-        console.log("Link added successfully!");
-  
+
+        const newDocRef = await addDoc(collection(firestore, 'links'), linkData);
+        console.log("Link added successfully. Document ID: ", newDocRef.id);
+
+        try {
+            const commentSetup = {
+                linkUID: newDocRef.id,
+                parentCommentUID: null,
+                createdBy: auth.currentUser.uid,
+                createdAt: serverTimestamp(),
+                text: "Thanks for adding this link " + auth.currentUser.displayName + "!",
+                points: 0    
+            }
+            await addDoc(collection(firestore, 'comments'), commentSetup);
+          } catch (error) {
+            console.error("Error adding comment:", error);
+          }
         // Optionally, reset the form fields after successful submission
         setUrl('');
         setDescription('');

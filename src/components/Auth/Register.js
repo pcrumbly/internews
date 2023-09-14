@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ui, uiConfig } from '../../services/firebase';
+import { ui, uiConfig, auth, firestore } from '../../services/firebase';
 
 function Register() {
   

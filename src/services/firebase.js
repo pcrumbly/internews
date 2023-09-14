@@ -37,7 +37,7 @@ export const uiConfig = {
         // ... other providers
     ],
     callbacks: {
-        signInSuccessWithAuthResult: () => false
+        signInSuccessWithAuthResult: () => true
     }
 };
 
