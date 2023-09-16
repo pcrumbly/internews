@@ -1,54 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import { ui, uiConfig, auth } from '../../services/firebase';
-import Logout from '../Auth/Logout';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { ui, uiConfig } from '../../services/firebase';
+import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext.js';
 
-function Login() {
-  const [user, setUser] = useState(null);
+const Login = () => {
+  const { user, error } = useGlobalState();
+  const { signOut } = useGlobalDispatch();
 
   useEffect(() => {
-    // Start the FirebaseUI widget
-    if (!user) {
-      ui.start('#firebaseui-auth-container', uiConfig);
-    }
-    
-    // Listen for changes in the user's authentication state
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-    });
+    // Start FirebaseUI for authentication
+    ui.start('#firebaseui-auth-container', uiConfig);
 
+    // Cleanup the UI on unmount
     return () => {
-      // Cleanup on unmount
-      unsubscribe();
       ui.reset();
-      
     };
   }, []);
 
+  useEffect(() => {
+    // This checks if there's an error after the user tries to log in
+    if (error) {
+      console.error("Authentication Error:", error);
+      // You can also display this error in your component
+    }
+  }, [error]);
+
   return (
     <div>
-      <h1>Login</h1>
-
-      {/* Check if the user is logged in */}
-      {user ? (
-        // User is logged in, display welcome message and logged-in content
+      { user ? (
         <div>
-          <p>Welcome, {user.displayName}!<Logout /></p>
-          <p>Submit a link and comment.</p>
-          <Link to="/submit">Submit</Link>
-          
-          {/* Add your logged-in content here */}
+          <p>Welcome, {user.displayName || user.email}!</p>
+          <button onClick={signOut}>Logout</button>
         </div>
       ) : (
-        // User is not logged in, display the Firebase UI for signing in
         <div>
-          <p>Sign in or register to continue:</p>
-          {/* Container for the FirebaseUI widget */}
+          <p>Please log in:</p>
           <div id="firebaseui-auth-container"></div>
         </div>
       )}
-
-      
     </div>
   );
 }

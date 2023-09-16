@@ -1,22 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { auth, firestore } from '../../services/firebase';
+import { firestore } from '../../services/firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
+import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext.js';
 
 function UserProfile() {
-  const [user, setUser] = useState(null);
+  const { user } = useGlobalState();
   const [points, setPoints] = useState(0);
+  const { updateUserPoints } = useGlobalDispatch();
+
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged(async (currentUser) => {
-      setUser(currentUser);
-      if (currentUser) {
-        const q = query(collection(firestore, 'points'), where('uid', '==', currentUser.uid));
+    const fetchPoints = async () => {
+      if (user) {
+
+        await updateUserPoints(user.uid);
+
+        const q = query(collection(firestore, 'points'), where('uid', '==', user.uid));
         const userSnapshot = await getDocs(q);
 
         if (userSnapshot.empty) {
           const pointsData = {
-            uid: currentUser.uid,
+            uid: user.uid,
             points: 0
           };
           await addDoc(collection(firestore, 'points'), pointsData);
@@ -25,10 +30,11 @@ function UserProfile() {
           setPoints(userSnapshot.docs[0].data().points);
         }
       }
-    });
+    };
 
-    return () => unsubscribe();
-  }, []);
+
+    fetchPoints();
+  }, [user, updateUserPoints]);
 
   if (!user) return <p>Loading...</p>;
 
@@ -40,7 +46,7 @@ function UserProfile() {
       <p>Email: {user.email}</p>
       <p>Points: {points}</p>
       <p><Link to={user ? "/logout" : "/"}>{user ? "Logout" : "Home"}</Link></p>
-      <p><a href="/reset-password">Reset Password</a></p>
+      <p><Link to="/forgot-password">Reset Password</Link></p>
       {/* Add more user details as needed */}
     </div>
   );
