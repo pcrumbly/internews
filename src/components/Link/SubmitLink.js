@@ -21,30 +21,29 @@ function SubmitLink() {
     const userId = state.user.uid;
   
     try {
+      
+      const newLink = {
+                          description: description,
+                          url: url,
+                          createdBy: userId,
+                          votedOn: [],
+                      }
       // Attempt to add the link
-      const linkDocRef = await dispatch.addLink({
-        description: description,
-        url: url,
-        createdBy: userId,
-        votedOn: [],
-      });
+      const linkDocRef = await dispatch.addLink();
       console.log("Link added successfully! Link UID: " + linkDocRef.id);
   
       // Clear the input fields
       setDescription(''); 
       setUrl('');
+      setLinkUID(linkDocRef.id);      
   
       // Add a default comment for the link
-      await dispatch.addComment({
-        linkUID: linkDocRef.id,
+      await dispatch.addComment(linkUID, {
+        linkUID: linkUID,
         parentCommentId: null,
         createdBy: userId,
-        text: "Thanks for adding this link " + state.user.displayName + "!",
-        points: 0,
-        votedOn: []
+        text: "Thanks for adding this link " + state.user.displayName + "!"
       });
-  
-      console.log("Default comment added successfully!");
     } catch (error) {
       console.error("Error:", error);
       // Maybe set some local state to notify the user of the error.
