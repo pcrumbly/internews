@@ -6,16 +6,13 @@ const GlobalStateContext = createContext();
 const GlobalDispatchContext = createContext();
 
 
-
-
-
-
 /**
+ * Global state reducer
  * Reduces the global state based on the given action.
  *
- * @param {Object} state - The current state object
- * @param {Object} action - The action object containing the type and payload
- * @return {Object} The updated state object
+ * @param {object} state - The current state of the application.
+ * @param {object} action - The action to be performed.
+ * @return {object} The new state after applying the action.
  */
 const globalReducer = (state, action) => {
   switch (action.type) {
@@ -41,6 +38,7 @@ const globalReducer = (state, action) => {
           console.error("Error sending password reset email:", error);
           // Optionally, update the state with the error so that components can react to it.
         });
+
       return state;
 
     case "SET_LINKS":
@@ -77,39 +75,45 @@ const globalReducer = (state, action) => {
 };
 
 
+
 /**
- * Returns the value of the global state.
+ * Global state
+ * Returns the global state using the GlobalStateContext.
  *
- * @return {any} The value of the global state.
+ * @return {any} The global state.
  */
 export const useGlobalState = () => {
   return useContext(GlobalStateContext);
 }
 
+
 /**
- * Returns the global dispatch function from the global dispatch context.
+ * Global dispatch
+ * Returns the global dispatch context.
  *
- * @return {function} The global dispatch function.
+ * @return {Context} The global dispatch context.
  */
 export const useGlobalDispatch = () => {
   return useContext(GlobalDispatchContext);
 }
 
-
 const initialState = {
   user: null,
   notifications: [],
-  error: null,    // Store any errors here
-  links: [],      // List of all links
-  comments: {},   // Mapping link IDs to an array of its comments
-  votes: {}       // Store user votes, e.g., { linkId1: true, commentId1: false }
+  error: null, // Store any errors here
+  links: [],   // List of all links
+  comments: {},// Mapping link IDs to an array of its comments
+  votes: {}    // Store user votes, e.g., { linkId1: true, commentId1: false }
 };
 
+
+
 /**
- * Generates a function comment for the given function body in a markdown code block with the correct language syntax.
+ * Global provider
+ * Creates a global provider component.
  *
- * @param {string} children - The children of the GlobalProvider component.
- * @return {ReactElement} - The rendered component.
+ * @param {object} children - The children components.
+ * @return {JSX.Element} The global provider component.
  */
 export const GlobalProvider = ({ children }) => {
   const [state, dispatch] = useReducer(globalReducer, initialState);
@@ -122,28 +126,22 @@ export const GlobalProvider = ({ children }) => {
     return () => unsubscribe();
   }, [dispatch]);
 
-
-
-
+  
   /**
-   * Sign in the user using FirebaseUI's sign-in methods.
+   * Handles the sign-in process using FirebaseUI.
    *
-   * @param {type} - No parameters required.
-   * @return {type} - No return value.
+   * @return {undefined} No return value.
    */
   const signIn = () => {
     // FirebaseUI's sign-in methods handle both registration and login
     ui.start('#firebaseui-auth-container', uiConfig);
   };
   
-
-
-
-  
+   
   /**
-   * Sign out the user and update the user state accordingly.
+   * Signs out the user and updates the user state in the application.
    *
-   * @return {Promise<void>} A promise that resolves when the user is signed out.
+   * @return {Promise<void>} A promise that resolves when the user is successfully signed out.
    */
   const signOut = async () => {
     try {
@@ -154,48 +152,58 @@ export const GlobalProvider = ({ children }) => {
     }
   };
 
-  /**
-   * Adds a link to the 'links' collection in Firestore.
-   *
-   * @param {Object} link - The link object to be added.
-   * @return {Promise} A promise that resolves when the link is successfully added.
-   */
-  const addLink = async (link) => {
-    try {
-      const linksCollection = collection(firestore, 'links');
-      const newLinkRef = await addDoc(linksCollection, {
-        ...link,
-        createdAt: serverTimestamp(),
-        points: 0
-      });
-      // If successful, dispatch action to update global state
-      dispatch({ type: "SET_LINKS", payload: [...state.links, { id: newLinkRef.id, ...link }] });
-    } catch (error) {
-      console.error("Error adding link: ", error);
-    }
-  };
+  
+/**
+ * Adds a new link to the 'links' collection in the Firestore database.
+ *
+ * @param {Object} link - The link to be added, containing properties such as 'url' and 'title'.
+ * @return {Promise<DocumentReference>} A promise that resolves to the reference of the newly added link document in Firestore.
+ */
+const addLink = async (link) => {
+  try {
+    const linksCollection = collection(firestore, 'links');
+    const newLinkRef = await addDoc(linksCollection, {
+      ...link,
+      createdAt: serverTimestamp(),
+      points: 0
+    });
+    // If successful, dispatch action to update global state
+    dispatch({ type: "SET_LINKS", payload: [...state.links, { id: newLinkRef.id, ...link }] });
+    console.log("GlobalContext Link added - newLinkRef.id:", newLinkRef.id);
+    return newLinkRef; // return the reference
+
+  } catch (error) {
+    console.error("Error adding link: ", error);
+    dispatch({ type: "SET_ERROR", payload: error.message });
+    return null;
+  }
+  
+};
   
   
   /**
-   * Adds a comment to the comments collection in the Firestore database.
+   * Adds a comment to the specified link.
    *
-   * @param {string} linkId - The ID of the link to which the comment belongs.
-   * @param {object} comment - The comment object containing the comment details.
-   * @return {Promise<void>} - A Promise that resolves when the comment is added successfully.
+   * @param {string} linkId - The ID of the link to add the comment to.
+   * @param {Object} comment - The comment object to add.
+   * @param {string} comment.commentId - The ID of the comment.
+   * @param {string} comment.message - The message of the comment.
+   * @param {string} comment.author - The author of the comment.
+   * @return {Promise<void>} A promise that resolves when the comment is added successfully.
    */
+
   const addComment = async (linkId, comment) => {
     try {
       const commentsCollection = collection(firestore, 'comments');
       const newCommentRef = await addDoc(commentsCollection, {
         ...comment,
-        linkUID: linkId,  
+        linkUID: linkId,  // assuming each comment references its link
         createdAt: serverTimestamp(),
         points: 0,
-        votedOn: []  
+        votedOn: []
       });
       const newComment = { id: newCommentRef.id, ...comment };
-      console.log(newComment);
-      console.log("Comment added successfully!"); 
+
       dispatch({
         type: "ADD_COMMENT",
         payload: { linkId: linkId, comment: newComment }
@@ -203,7 +211,15 @@ export const GlobalProvider = ({ children }) => {
     } catch (error) {
       console.error("Error adding comment: ", error);
     }
-};    
+};
+
+
+/**
+ * Vote on an item.
+ *
+ * @param {string} linkId - The ID of the link.
+ * @return {Promise<void>} A promise that resolves with no value.
+ */
 
 const voteOnItem = async (linkId) => {
   try {
@@ -229,6 +245,13 @@ const voteOnItem = async (linkId) => {
   }
 };
 
+
+
+  /**
+   * Fetches links from the Firestore database and updates the state with the fetched links.
+   *
+   * @return {Promise<void>} - A promise that resolves when the links are fetched and the state is updated.
+   */
   const fetchLinks = async () => {
     try {
       const linksCollection = collection(firestore, 'links');
@@ -248,6 +271,13 @@ const voteOnItem = async (linkId) => {
     }
   };
   
+  
+  /**
+   * Fetches comments for a given linkId from the 'comments' collection.
+   *
+   * @param {string} linkId - The ID of the link.
+   * @return {Promise<void>} Returns a Promise that resolves when the comments are fetched successfully.
+   */
   const fetchComments = async (linkId) => {
     try {
       const commentsCollection = collection(firestore, 'comments');
@@ -269,6 +299,13 @@ const voteOnItem = async (linkId) => {
       console.error("Error fetching comments for link: ", error);
     }
 };
+
+/**
+ * Updates the points of a user in the database based on the total points earned from the links they added.
+ *
+ * @param {string} userId - The ID of the user whose points need to be updated.
+ * @return {void} - This function does not return anything.
+ */
 
 const updateUserPoints = async (userId) => {
   try {

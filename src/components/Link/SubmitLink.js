@@ -1,14 +1,27 @@
 import React, { useState, useContext, useReducer, useEffect } from 'react';
 import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext';
-import { serverTimestamp } from 'firebase/firestore';
 
+
+
+
+/**
+ * Submit a link to the application.
+ *
+ * @param {object} e - The event object.
+ * @return {void}
+ */
 function SubmitLink() {
   const state = useGlobalState(); 
   const dispatch = useGlobalDispatch();
   const [description, setDescription] = useState('');
   const [url, setUrl] = useState('');
-  const [linkUID, setLinkUID] = useState(null);
 
+  /**
+   * Handles the form submission event asynchronously.
+   *
+   * @param {Object} e - the form submission event object
+   * @return {void} This function does not return a value
+   */
   const handleSubmit = async (e) => {
     e.preventDefault();
   
@@ -21,7 +34,7 @@ function SubmitLink() {
     const userId = state.user.uid;
   
     try {
-      
+
       const newLink = {
                           description: description,
                           url: url,
@@ -29,21 +42,25 @@ function SubmitLink() {
                           votedOn: [],
                       }
       // Attempt to add the link
-      const linkDocRef = await dispatch.addLink();
-      console.log("Link added successfully! Link UID: " + linkDocRef.id);
-  
+      const linkDocRef = await dispatch.addLink(newLink);
+      console.log("Link added successfully! Link ID: " + linkDocRef.id);
+
       // Clear the input fields
       setDescription(''); 
       setUrl('');
-      setLinkUID(linkDocRef.id);      
-  
-      // Add a default comment for the link
-      await dispatch.addComment(linkUID, {
-        linkUID: linkUID,
-        parentCommentId: null,
-        createdBy: userId,
-        text: "Thanks for adding this link " + state.user.displayName + "!"
-      });
+      setLinkUID(linkDocRef.id);    
+
+      if (linkDocRef.id != null) {
+        // Add a default comment for the link
+        await dispatch.addComment(linkDocRef.id, {
+          parentCommentId: null,
+          createdBy: userId,
+          text: "Thanks for adding this link " + state.user.displayName + "!"
+        });
+      } else {
+        console.log(linkDocRef.id);
+      }              
+      
     } catch (error) {
       console.error("Error:", error);
       // Maybe set some local state to notify the user of the error.
