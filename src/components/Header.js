@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useGlobalState } from '../contexts/GlobalStateContext.js';
 
-function Header({ user }) {
+function Header() {
+    const { user } = useGlobalState();
     const [showWarning, setShowWarning] = useState(false);
 
     const handleOnClick = () => {

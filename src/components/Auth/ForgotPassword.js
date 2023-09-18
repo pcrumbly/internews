@@ -1,15 +1,15 @@
 import React from 'react';
-import { auth } from '../../services/firebase';  // Adjust the path to your Firebase configuration
+import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext.js';
 
 function ForgotPassword() {
+  const { user } = useGlobalState();
+  const dispatch = useGlobalDispatch();
 
-  const sendResetEmail = async () => {
-    try {
-      const currentUserEmail = auth.currentUser.email; 
-      await auth.sendPasswordResetEmail(currentUserEmail);
-      console.log("Password reset email sent!");
-    } catch (error) {
-      console.error("Error sending password reset email:", error);
+  const sendResetEmail = () => {
+    if (user && user.email) {
+      dispatch({ type: "SEND_PASSWORD_RESET_EMAIL", payload: { email: user.email } });
+    } else {
+      console.error("No user email available to send a password reset.");
     }
   };
 

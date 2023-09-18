@@ -1,7 +1,7 @@
 // Import core Firebase services
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+import { getFirestore, serverTimestamp } from 'firebase/firestore';
 //import { getAnalytics } from "firebase/analytics";
 
 // Import FirebaseUI and its styles
@@ -26,6 +26,7 @@ const app = initializeApp(firebaseConfig);
 // Initialize Firebase services
 export const auth = getAuth(app);
 export const firestore = getFirestore(app);
+export const firestoreTimestamp = serverTimestamp();
 
 // FirebaseUI config
 export const uiConfig = {
