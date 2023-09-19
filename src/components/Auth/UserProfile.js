@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { firestore } from '../../services/firebase';
 import { collection, addDoc, query, where, getDocs } from 'firebase/firestore';
 import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext.js';
@@ -8,7 +8,15 @@ function UserProfile() {
   const { user } = useGlobalState();
   const [points, setPoints] = useState(0);
   const { updateUserPoints } = useGlobalDispatch();
+  const navigate = useNavigate();
 
+
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+  }, [user, navigate]);
 
   useEffect(() => {
     const fetchPoints = async () => {
@@ -31,7 +39,6 @@ function UserProfile() {
         }
       }
     };
-
 
     fetchPoints();
   }, [user, updateUserPoints]);

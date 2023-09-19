@@ -1,3 +1,13 @@
+/*
+**
+** Contexts
+** const globalReducer = (state, action) => 
+** export const useGlobalState = () => useContext(GlobalStateContext)
+** export const useGlobalDispatch = () => useContext(GlobalDispatchContext)
+** const initialState = 
+** export const GlobalProvider
+*/
+
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { auth, ui, uiConfig, firestore } from '../services/firebase.js';
 import { collection, addDoc, serverTimestamp, getDocs, query, where, getDoc, doc, updateDoc } from 'firebase/firestore';

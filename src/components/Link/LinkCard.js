@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { firestore } from '../../services/firebase';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc, getDocs, query, where, collection, addDoc } from 'firebase/firestore';
 import timeSince from '../../services/myUtils';
 import { useGlobalDispatch, useGlobalState } from '../../contexts/GlobalStateContext';
 import VoteButton from './VoteButton';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
+import CommentCard from '../Comments/CommentCard';
 
 function LinkCard({ linkId }) {
   const [link, setLink] = useState(null);
   const [redirectToLogin, setRedirectToLogin] = useState(false);
   const globalDispatch = useGlobalDispatch();
   const { user } = useGlobalState();
+  const [commentsCount, setCommentsCount] = useState(0);
   
 
 
@@ -29,6 +31,18 @@ function LinkCard({ linkId }) {
 
     fetchLinkData();
   }, [linkId]);
+
+  useEffect(() => {
+    const fetchCommentsCount = async () => {
+        const commentsCollection = collection(firestore, 'comments');
+        const q = query(commentsCollection, where("linkUID", "==", linkId));
+        const commentsSnapshot = await getDocs(q);
+        
+        setCommentsCount(commentsSnapshot.size);  // Set the count of comments
+    };
+
+    fetchCommentsCount();
+}, [linkId]);
 
   const handleVote = async () => {
     if (!user) {
@@ -98,8 +112,8 @@ if (!link)
         <tr>
           <td><span></span></td>
           <td>{link.points} points</td>
-          <td>{timeSince(link.createdAt)}</td>
-          <td></td>
+          <td><small><p>{timeSince(link.createdAt)}</p></small></td>
+          <td><Link to={`/comments/${linkId}`}>View all {commentsCount} comments</Link></td>
         </tr>
       </tbody>
     </table>

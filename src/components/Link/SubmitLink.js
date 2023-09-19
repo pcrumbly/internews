@@ -2,8 +2,6 @@ import React, { useState, useContext, useReducer, useEffect } from 'react';
 import { useGlobalState, useGlobalDispatch } from '../../contexts/GlobalStateContext';
 
 
-
-
 /**
  * Submit a link to the application.
  *
@@ -17,16 +15,21 @@ function SubmitLink() {
   const [url, setUrl] = useState('');
 
   /**
+   * handleSubmit()
    * Handles the form submission event asynchronously.
    *
    * @param {Object} e - the form submission event object
    * @return {void} This function does not return a value
    */
   const handleSubmit = async (e) => {
+    // Prevent the form from submitting (Does this work?)
     e.preventDefault();
   
     // Check if the user exists
     if (!state.user) {
+      // TODO: 
+      // Redirect to the login page
+      
       console.error("User not authenticated");
       return;
     }
@@ -43,12 +46,10 @@ function SubmitLink() {
                       }
       // Attempt to add the link
       const linkDocRef = await dispatch.addLink(newLink);
-      console.log("Link added successfully! Link ID: " + linkDocRef.id);
 
       // Clear the input fields
       setDescription(''); 
-      setUrl('');
-      setLinkUID(linkDocRef.id);    
+      setUrl('');    
 
       if (linkDocRef.id != null) {
         // Add a default comment for the link

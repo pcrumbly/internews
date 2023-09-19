@@ -14,6 +14,7 @@ import Header from './components/Header';
 import Links from './components/Link/Links';
 import SubmitLink from './components/Link/SubmitLink';
 import ForgotPassword from './components/Auth/ForgotPassword';
+import Comments from './components/Comments/Comments';
 
 
 
@@ -33,6 +34,7 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/submit" element={<SubmitLink />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/comments/:linkId" element={<Comments />} />
         </Routes>
       </Router>
     </GlobalProvider>
