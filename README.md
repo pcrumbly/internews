@@ -1,5 +1,7 @@
 # InterNews
-HackernewsClone
+HackernewsClone - using React and Firebase
+TODO:
+
 
 # Getting Started with Create React App
 
