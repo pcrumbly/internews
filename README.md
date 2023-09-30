@@ -1,6 +1,8 @@
 # InterNews
 HackernewsClone - using React and Firebase
 TODO:
+finish comments post, post sub comments, upvote comments
+redo profile
 
 
 # Getting Started with Create React App
