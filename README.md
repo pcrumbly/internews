@@ -1,4 +1,6 @@
 # InterNews
+need to get back to work
+
 HackernewsClone - using React and Firebase
 TODO:
 finish comments post, post sub comments, upvote comments
